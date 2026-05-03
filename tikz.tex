@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage[a4paper, margin=0.5in]{geometry}
+\usepackage[left=1cm, right=1cm, top=0.5cm, bottom=0.5cm]{geometry}
 \usepackage{tikz}
 \usepackage{listings}
 \usepackage[dvipsnames]{xcolor}
@@ -7,8 +7,11 @@
 \usepackage{hyperref}
 \usepackage{pgfplots}
 \usepackage{graphicx}
+\usepackage{tikz-3dplot}
+
 \usetikzlibrary{calc}
 \usetikzlibrary{intersections}
+\usetikzlibrary{3d}
 \usetikzlibrary{decorations.fractals,spy}
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{arrows}
@@ -44,34 +47,7 @@
 \begin{document}
 \maketitle
 
-\section{TikZ Evvironment in \LaTeX}
-
-\subsubsection*{General Setup}
-\begin{minipage}[c]{0.49\textwidth}
-\begin{lstlisting}
-\documentclass{...}
-\usepackage{tikz}
-
-\begin{document}
-
-\begin{tikzpicture}
-  % TikZ commands for cool visualization
-\end{tikzpicture}
-
-\end{document}
-\end{lstlisting}
-\end{minipage}
-\hfill
-\begin{minipage}[c]{0.49\textwidth}
-  \centering
-
-  \begin{tikzpicture}
-    \begin{axis}
-      \addplot3[surf,domain=0:360,samples=40]
-      {sin(x)*sin(y)};
-    \end{axis}
-  \end{tikzpicture}
-\end{minipage}
+\input{sections/01_general_setup/general_setup.tex}
 
 
 \section{Relative and calculated coordinates}
@@ -883,7 +859,6 @@
   \end{tikzpicture}
 \end{minipage}
 
-\section{Plotten}
 
 \section{Arrows}
 \subsubsection*{Most common arrow types}
@@ -1009,167 +984,64 @@
   \end{tikzpicture}
 \end{minipage}
 
-\newpage
-\section{Positioning (a full on example)}
 
-In research papers, especially related to computer science, you often see diagrams as such
-\begin{center}
 
-  \begin{tikzpicture}[
-      % Styles
-      MATMUL/.style={rectangle, draw=black, fill=Plum!30, very thick, minimum size=7mm, rounded corners},
-      SOFTMAX/.style={rectangle, draw=black, fill=Green!20, very thick, minimum size=7mm, rounded corners},
-      MASK/.style={rectangle, draw=black, fill=red!20, very thick, minimum size=7mm, rounded corners},
-      SCALE/.style={rectangle, draw=black, fill=yellow!30, very thick, minimum size=7mm, rounded corners},
-    ]
-    % Help Grid
-    % \draw[gray!20] (-5,-5) grid (15, 15);
-    % \foreach \x in {0,...,10} \fill[blue!20] (\x,0) circle (1pt) node[below] {(\x,0)};
-    % \foreach \y in {0,...,10} \fill[blue!20] (0,\y) circle (1pt) node[left] {(0,\y)};
+\section{3D}
+\subsubsection*{Canvas}
 
-    % Nodes
-    \node (Q) {Q};
-    \node (K) [right=0.25cm of Q] {K};
-    \node (V) [right=0.25cm of K] {V};
-    \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
-    \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
-    \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
-    \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
-    \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
-
-    % Connections
-    \draw[-{Latex}] (Q.north) -- ($(MatMulFirst.south) + (-0.385cm, 0)$);
-    \draw[-{Latex}] (K.north) -- ($(MatMulFirst.south) + (0.385cm, 0)$);
-    \draw[-{Latex}] (MatMulFirst.north) -- (Scale.south);
-    \draw[-{Latex}] (Scale.north) -- (Mask.south);
-    \draw[-{Latex}] (Mask.north) -- (Softmax.south);
-    \draw[-{Latex}] (V.north) -| ($(MatMulSecond.south) + (0.3126cm, 0)$);
-    \draw[-{Latex}, rounded corners] (Softmax.north) -- ++(0,0.25cm) -| ($(MatMulSecond.south) + (-0.385cm, 0)$);
-    \draw[-{Latex}] (MatMulSecond.north) -- ($(MatMulSecond) + (0,0.8cm)$);
-  \end{tikzpicture}
-\end{center}
-This requires placing nodes relative to another and is usually done as follows:
-\subsubsection*{Defining node styles}
-First some styles are defined that can be reused for multiple nodes
+\begin{minipage}[c]{0.7\textwidth}
 \begin{lstlisting}
-...
-\begin{tikzpicture}[
-  % Styles
-  MATMUL/.style   = {rectangle, draw=black, fill=Plum!30,   very thick, rounded corners},
-  SOFTMAX/.style  = {rectangle, draw=black, fill=Green!20,  very thick, rounded corners},
-  MASK/.style     = {rectangle, draw=black, fill=red!20,    very thick, rounded corners},
-  SCALE/.style    = {rectangle, draw=black, fill=yellow!30, very thick, rounded corners},
-  ]
-\end{tikzpicture}
-...
-\end{lstlisting}
-\subsubsection*{Positioning nodes}
-You then go on positioning nodes relative to other nodes
-\\[4pt]
-\begin{minipage}[c]{0.8\textwidth}
-\begin{lstlisting}
+\usepackage{tikz-3dplot}
+\tdplotsetmaincoords{70}{120}
 \begin{tikzpicture}
-  [
-  % Styles
   ...
-  ]
-  % Nodes
-  \node (Q) {Q};
-  \node (K) [right=of Q] {K};
-  \node (V) [right=of K] {V};
-  \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
-  \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
-  \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
-  \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
-  \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
+  % XY
+  \node[canvas is xy plane at z=0] at ($(1,0)!0.5!(1,2)$)
+       {canvas is xy plane};
+  % XZ
+  \node[canvas is xz plane at y=0] at ($(0,0,1)!0.5!(2,0,1)$)
+       {canvas is xz plane};
+  % YZ
+  \node[canvas is yz plane at x=0] at ($(0,0,1)!0.5!(0,2,1)$)
+       {canvas is yz plane};
   ...
 \end{tikzpicture}
 \end{lstlisting}
 \end{minipage}
 \hfill
-\begin{minipage}[c]{0.19\textwidth}
+\begin{minipage}[c]{0.29\textwidth}
   \centering
-  \begin{tikzpicture}[
-      % Styles
-      MATMUL/.style={rectangle, draw=black, fill=Plum!30, very thick, minimum size=7mm, rounded corners},
-      SOFTMAX/.style={rectangle, draw=black, fill=Green!20, very thick, minimum size=7mm, rounded corners},
-      MASK/.style={rectangle, draw=black, fill=red!20, very thick, minimum size=7mm, rounded corners},
-      SCALE/.style={rectangle, draw=black, fill=yellow!30, very thick, minimum size=7mm, rounded corners},
-    ]
-
-    % Nodes
-    \node (Q) {Q};
-    \node (K) [right=0.25cm of Q] {K};
-    \node (V) [right=0.25cm of K] {V};
-    \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
-    \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
-    \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
-    \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
-    \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
-  \end{tikzpicture}
+  \includegraphics{sections/3d/standard/standard_canvas}
 \end{minipage}
 
-\newpage
-\subsubsection*{Connecting nodes}
-Lastly you connect the nodes
-\\[4pt]
-\begin{minipage}[c]{0.8\textwidth}
+\subsubsection*{Custom Canvas}
+
+\begin{minipage}[c]{0.7\textwidth}
 \begin{lstlisting}
+\usepackage{tikz-3dplot}
+\tdplotsetmaincoords{70}{120}
 \begin{tikzpicture}
-  [
-  % Styles
   ...
-  ]
-  % Nodes
-  ...
-  % Connections
-  \draw[-{Latex}] (Q.north) -- ($(MatMulFirst.south) + (-0.385cm, 0)$);
-  \draw[-{Latex}] (K.north) -- ($(MatMulFirst.south) + (0.385cm, 0)$);
-  \draw[-{Latex}] (MatMulFirst.north) -- (Scale.south);
-  \draw[-{Latex}] (Scale.north) -- (Mask.south);
-  \draw[-{Latex}] (Mask.north) -- (Softmax.south);
-  \draw[-{Latex}] (V.north) -| ($(MatMulSecond.south) + (0.3126cm, 0)$);
-  \draw[-{Latex}, rounded corners] (Softmax.north) -- ++(0,0.25cm) -| ($(MatMulSecond.south) + (-0.385cm, 0)$);
-  \draw[-{Latex}] (MatMulSecond.north) -- ($(MatMulSecond) + (0,0.8cm)$);
+  \begin{scope}[
+      plane origin={(2,0,0)},
+      plane x={(0,2,0)},
+      plane y={(2,0,2)},
+      canvas is plane
+    ]
+    \draw[->, red  ] (0,0,0) -- (0,0.5,0);
+    \draw[->, green] (0,0,0) -- (0.5,0,0);
+  \end{scope}
   ...
 \end{tikzpicture}
 \end{lstlisting}
 \end{minipage}
 \hfill
-\begin{minipage}[c]{0.19\textwidth}
+\begin{minipage}[c]{0.29\textwidth}
   \centering
- \begin{tikzpicture}[
-      % Styles
-      MATMUL/.style={rectangle, draw=black, fill=Plum!30, very thick, minimum size=7mm, rounded corners},
-      SOFTMAX/.style={rectangle, draw=black, fill=Green!20, very thick, minimum size=7mm, rounded corners},
-      MASK/.style={rectangle, draw=black, fill=red!20, very thick, minimum size=7mm, rounded corners},
-      SCALE/.style={rectangle, draw=black, fill=yellow!30, very thick, minimum size=7mm, rounded corners},
-    ]
-    % Help Grid
-    % \draw[gray!20] (-5,-5) grid (15, 15);
-    % \foreach \x in {0,...,10} \fill[blue!20] (\x,0) circle (1pt) node[below] {(\x,0)};
-    % \foreach \y in {0,...,10} \fill[blue!20] (0,\y) circle (1pt) node[left] {(0,\y)};
-
-    % Nodes
-    \node (Q) {Q};
-    \node (K) [right=0.25cm of Q] {K};
-    \node (V) [right=0.25cm of K] {V};
-    \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
-    \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
-    \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
-    \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
-    \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
-
-    % Connections
-    \draw[-{Latex}] (Q.north) -- ($(MatMulFirst.south) + (-0.385cm, 0)$);
-    \draw[-{Latex}] (K.north) -- ($(MatMulFirst.south) + (0.385cm, 0)$);
-    \draw[-{Latex}] (MatMulFirst.north) -- (Scale.south);
-    \draw[-{Latex}] (Scale.north) -- (Mask.south);
-    \draw[-{Latex}] (Mask.north) -- (Softmax.south);
-    \draw[-{Latex}] (V.north) -| ($(MatMulSecond.south) + (0.3126cm, 0)$);
-    \draw[-{Latex}, rounded corners] (Softmax.north) -- ++(0,0.25cm) -| ($(MatMulSecond.south) + (-0.385cm, 0)$);
-    \draw[-{Latex}] (MatMulSecond.north) -- ($(MatMulSecond) + (0,0.8cm)$);
-  \end{tikzpicture}
+  \includegraphics{sections/3d/custom_canvas/custom_canvas}
 \end{minipage}
+
+\newpage
+\input{sections/positioning/positioning.tex}
 
 \end{document}

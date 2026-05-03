@@ -1,0 +1,161 @@
+\section{Positioning (a full on example)}
+
+In research papers, especially related to computer science, you often see diagrams as such
+\begin{center}
+
+  \begin{tikzpicture}[
+      % Styles
+      MATMUL/.style={rectangle, draw=black, fill=Plum!30, very thick, minimum size=7mm, rounded corners},
+      SOFTMAX/.style={rectangle, draw=black, fill=Green!20, very thick, minimum size=7mm, rounded corners},
+      MASK/.style={rectangle, draw=black, fill=red!20, very thick, minimum size=7mm, rounded corners},
+      SCALE/.style={rectangle, draw=black, fill=yellow!30, very thick, minimum size=7mm, rounded corners},
+    ]
+    % Help Grid
+    % \draw[gray!20] (-5,-5) grid (15, 15);
+    % \foreach \x in {0,...,10} \fill[blue!20] (\x,0) circle (1pt) node[below] {(\x,0)};
+    % \foreach \y in {0,...,10} \fill[blue!20] (0,\y) circle (1pt) node[left] {(0,\y)};
+
+    % Nodes
+    \node (Q) {Q};
+    \node (K) [right=0.25cm of Q] {K};
+    \node (V) [right=0.25cm of K] {V};
+    \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
+    \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
+    \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
+    \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
+    \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
+
+    % Connections
+    \draw[-{Latex}] (Q.north) -- ($(MatMulFirst.south) + (-0.385cm, 0)$);
+    \draw[-{Latex}] (K.north) -- ($(MatMulFirst.south) + (0.385cm, 0)$);
+    \draw[-{Latex}] (MatMulFirst.north) -- (Scale.south);
+    \draw[-{Latex}] (Scale.north) -- (Mask.south);
+    \draw[-{Latex}] (Mask.north) -- (Softmax.south);
+    \draw[-{Latex}] (V.north) -| ($(MatMulSecond.south) + (0.3126cm, 0)$);
+    \draw[-{Latex}, rounded corners] (Softmax.north) -- ++(0,0.25cm) -| ($(MatMulSecond.south) + (-0.385cm, 0)$);
+    \draw[-{Latex}] (MatMulSecond.north) -- ($(MatMulSecond) + (0,0.8cm)$);
+  \end{tikzpicture}
+\end{center}
+This requires placing nodes relative to another and is usually done as follows:
+\subsubsection*{Defining node styles}
+First some styles are defined that can be reused for multiple nodes
+\begin{lstlisting}
+...
+\begin{tikzpicture}[
+  % Styles
+  MATMUL/.style   = {rectangle, draw=black, fill=Plum!30,   very thick, rounded corners},
+  SOFTMAX/.style  = {rectangle, draw=black, fill=Green!20,  very thick, rounded corners},
+  MASK/.style     = {rectangle, draw=black, fill=red!20,    very thick, rounded corners},
+  SCALE/.style    = {rectangle, draw=black, fill=yellow!30, very thick, rounded corners},
+  ]
+\end{tikzpicture}
+...
+\end{lstlisting}
+\subsubsection*{Positioning nodes}
+You then go on positioning nodes relative to other nodes
+\\[4pt]
+\begin{minipage}[c]{0.8\textwidth}
+\begin{lstlisting}
+\begin{tikzpicture}
+  [
+  % Styles
+  ...
+  ]
+  % Nodes
+  \node (Q) {Q};
+  \node (K) [right=of Q] {K};
+  \node (V) [right=of K] {V};
+  \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
+  \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
+  \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
+  \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
+  \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
+  ...
+\end{tikzpicture}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.19\textwidth}
+  \centering
+  \begin{tikzpicture}[
+      % Styles
+      MATMUL/.style={rectangle, draw=black, fill=Plum!30, very thick, minimum size=7mm, rounded corners},
+      SOFTMAX/.style={rectangle, draw=black, fill=Green!20, very thick, minimum size=7mm, rounded corners},
+      MASK/.style={rectangle, draw=black, fill=red!20, very thick, minimum size=7mm, rounded corners},
+      SCALE/.style={rectangle, draw=black, fill=yellow!30, very thick, minimum size=7mm, rounded corners},
+    ]
+
+    % Nodes
+    \node (Q) {Q};
+    \node (K) [right=0.25cm of Q] {K};
+    \node (V) [right=0.25cm of K] {V};
+    \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
+    \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
+    \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
+    \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
+    \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
+  \end{tikzpicture}
+\end{minipage}
+
+\newpage
+\subsubsection*{Connecting nodes}
+Lastly you connect the nodes
+\\[4pt]
+\begin{minipage}[c]{0.8\textwidth}
+\begin{lstlisting}
+\begin{tikzpicture}
+  [
+  % Styles
+  ...
+  ]
+  % Nodes
+  ...
+  % Connections
+  \draw[-{Latex}] (Q.north) -- ($(MatMulFirst.south) + (-0.385cm, 0)$);
+  \draw[-{Latex}] (K.north) -- ($(MatMulFirst.south) + (0.385cm, 0)$);
+  \draw[-{Latex}] (MatMulFirst.north) -- (Scale.south);
+  \draw[-{Latex}] (Scale.north) -- (Mask.south);
+  \draw[-{Latex}] (Mask.north) -- (Softmax.south);
+  \draw[-{Latex}] (V.north) -| ($(MatMulSecond.south) + (0.3126cm, 0)$);
+  \draw[-{Latex}, rounded corners] (Softmax.north) -- ++(0,0.25cm) -| ($(MatMulSecond.south) + (-0.385cm, 0)$);
+  \draw[-{Latex}] (MatMulSecond.north) -- ($(MatMulSecond) + (0,0.8cm)$);
+  ...
+\end{tikzpicture}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.19\textwidth}
+  \centering
+ \begin{tikzpicture}[
+      % Styles
+      MATMUL/.style={rectangle, draw=black, fill=Plum!30, very thick, minimum size=7mm, rounded corners},
+      SOFTMAX/.style={rectangle, draw=black, fill=Green!20, very thick, minimum size=7mm, rounded corners},
+      MASK/.style={rectangle, draw=black, fill=red!20, very thick, minimum size=7mm, rounded corners},
+      SCALE/.style={rectangle, draw=black, fill=yellow!30, very thick, minimum size=7mm, rounded corners},
+    ]
+    % Help Grid
+    % \draw[gray!20] (-5,-5) grid (15, 15);
+    % \foreach \x in {0,...,10} \fill[blue!20] (\x,0) circle (1pt) node[below] {(\x,0)};
+    % \foreach \y in {0,...,10} \fill[blue!20] (0,\y) circle (1pt) node[left] {(0,\y)};
+
+    % Nodes
+    \node (Q) {Q};
+    \node (K) [right=0.25cm of Q] {K};
+    \node (V) [right=0.25cm of K] {V};
+    \node[MATMUL] (MatMulFirst) at ($(Q)!0.5!(K) + (0,1cm)$) {MatMul};
+    \node[SCALE] (Scale) [above=0.5cm of MatMulFirst] {Scale};
+    \node[MASK] (Mask) [above=0.5cm of Scale] {Mask (opt.)};
+    \node[SOFTMAX] (Softmax) [above=0.5cm of Mask] {Softmax};
+    \node[MATMUL] (MatMulSecond) at ($(K)!0.6!(V) + (0,6cm)$) {MatMul};
+
+    % Connections
+    \draw[-{Latex}] (Q.north) -- ($(MatMulFirst.south) + (-0.385cm, 0)$);
+    \draw[-{Latex}] (K.north) -- ($(MatMulFirst.south) + (0.385cm, 0)$);
+    \draw[-{Latex}] (MatMulFirst.north) -- (Scale.south);
+    \draw[-{Latex}] (Scale.north) -- (Mask.south);
+    \draw[-{Latex}] (Mask.north) -- (Softmax.south);
+    \draw[-{Latex}] (V.north) -| ($(MatMulSecond.south) + (0.3126cm, 0)$);
+    \draw[-{Latex}, rounded corners] (Softmax.north) -- ++(0,0.25cm) -| ($(MatMulSecond.south) + (-0.385cm, 0)$);
+    \draw[-{Latex}] (MatMulSecond.north) -- ($(MatMulSecond) + (0,0.8cm)$);
+  \end{tikzpicture}
+\end{minipage}

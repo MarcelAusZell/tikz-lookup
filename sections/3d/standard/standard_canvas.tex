@@ -1,0 +1,74 @@
+\documentclass[tikz, border={3pt}]{standalone}
+
+
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage[dvipsnames]{xcolor}
+\usetikzlibrary{calc}
+
+\begin{document}
+
+\tdplotsetmaincoords{70}{120}
+
+\begin{tikzpicture}[tdplot_main_coords]
+
+  \def\radius{1}
+  \def\startX{-5}
+  \def\endX{5}
+  \def\startY{-3}
+  \def\endY{7}
+
+  \coordinate (FRAME_ORIGIN) at (\startX, \startY, 0);
+
+  % XY GRID
+  % \foreach \x in {\startX,...,\endX}
+  % \foreach \y in {\startY,...,\endY}
+  % {
+  %   \draw[lightgray!70, very thin] (\x,\startY) -- (\x,\endY);
+  %   \draw[lightgray!70, very thin] (\startX,\y) -- (\endX,\y);
+  % }
+
+  % \foreach \x in {\startX,...,\endX} {
+  %   \fill[lightgray] (\x,\startY) node[left, canvas is xy plane at z = 0, rotate = 90] {\x} circle (1pt);
+  % }
+  % \foreach \y in {\startY,...,\endY} {
+  %   \fill[lightgray] (\startX,\y) node[above=2pt, canvas is xy plane at z = 0, rotate = 90] {\y} circle (1pt);
+  % }
+
+  % \begin{scope}[
+  %     plane origin={(2,0,0)},
+  %     plane x={(0,2,0)},
+  %     plane y={(2,0,2)},
+  %     canvas is plane
+  %   ]
+
+  %   \draw[step=0.05, lightgray, opacity=0.4] (0,0) grid (1,1);
+  %   \draw (0,0) grid (1,1);
+  %   \draw[->, very thick, red, line cap=round] (0,0,0) -- (0,0.5,0);
+  %   \draw[->, very thick, Green,line cap=round] (0,0,0) -- (0.5,0,0);
+  %   \node[transform shape, align=center, scale=0.3, font=\ttfamily] at (0.5,0.5) {canvas is \\ custom};
+  % \end{scope}
+
+  \begin{scope}[shift={(0,0,-3)},line cap=round]
+    % XY
+    \draw (0,0) -- (2,0) -- (2,2) -- (0,2) --  cycle;
+    \draw[canvas is xy plane at z = 0, step=0.1, lightgray, opacity=0.4] (0,0) grid (2,2);
+    \node[canvas is xy plane at z = 0, rotate=90, align=center, scale=0.8, font=\ttfamily] at ($(1,0)!0.5!(1,2)$)  {canvas is \\ \textcolor{red}{x}\textcolor{Green}{y} \\ plane};
+    % XZ
+    \draw (0,0) -- (2,0) -- (2,0,2) -- (0,0,2) --  cycle;
+    \draw[canvas is xz plane at y = 0, step=0.1, lightgray, opacity=0.4] (0,0) grid (2,2); %TODO DOES NOT WORK
+    \node[canvas is xz plane at y = 0, xscale=-1, align=center, scale=0.8, font=\ttfamily] at ($(0,0,1)!0.5!(2,0,1)$)  {canvas is \\ \textcolor{Green}{x}\textcolor{blue}{z} \\ plane};
+    % YZ
+    \draw (0,0) -- (0,2) -- (0,2,2) -- (0,0,2) -- cycle;
+    \draw[canvas is yz plane at x = 0, step=0.1, lightgray, opacity=0.4] (0,0) grid (2,2); %TODO DOES NOT WORK
+    \node[canvas is yz plane at x = 0, align=center, scale=0.8, font=\ttfamily] at ($(0,0,1)!0.5!(0,2,1)$)  {canvas is \\ \textcolor{red}{y}\textcolor{blue}{z} \\ plane};
+    % AXES
+    \draw[Green, ->, very thick, line cap = round] (0,0,0) -- ($(0,0,0) + (0.75,0,0)$);
+    \draw[red,   ->, very thick, line cap = round] (0,0,0) -- ($(0,0,0) + (0,0.75,0)$);
+    \draw[blue,  ->, very thick, line cap = round] (0,0,0) -- ($(0,0,0) + (0,0,0.75)$);
+  \end{scope}
+  % CUSTOM
+
+\end{tikzpicture}
+
+\end{document}
